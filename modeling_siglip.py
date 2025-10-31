@@ -57,10 +57,30 @@ class SiglipVisionEmbedding(nn.Module):
             persistent=False,
         )
     def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
-        pass
+        batch_size, channel, height, width = pixel_values.shape
+        # Convolution for non-overlapping for embeddings using the patch_embedding
+        # This operration will convert the 
+        # [BatchSize, Channel, Height, Width] > [BatchSize, Embed_Dim,  Num_Patches_H, Num_Patches_W] 
+        patch_embeddings = self.patch_embedding(pixel_values)
+
+        # Transform the Num_Patches_H, Num_Patches_W into TotalPatches
+        # [Batch_Size, Embed_Dim, Num_Patches]
+        patch_embeddings = patch_embeddings.flatten(2)
+
+        # Batch_Size, Embed_Dim, Num_Patches] > [Batch_Size, Num_Patches, Embed_Dim] 
+        # Transpose the EmbedDim with Num_Patches
+        patch_embeddings = patch_embeddings.permute(0,2,1)
+
+        # Add Positions
+        patch_embeddings = patch_embeddings + self.position_embedding(self.position_ids)
+
+        return patch_embeddings
+
+
 
 class SiglipEncoder(nn.Module):
-    pass
+    def __init__(self, config: SiglipVisionConfig):
+        pass
 
 class SiglipVisionTransformer(nn.Module):
     def __init__(self, config: SiglipVisionConfig):
