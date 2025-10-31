@@ -57,7 +57,10 @@ class SiglipVisionEmbedding(nn.Module):
             persistent=False,
         )
     def forward(self, pixel_values: torch.Tensor) -> torch.Tensor:
-        
+        pass
+
+class SiglipEncoder(nn.Module):
+    pass
 
 class SiglipVisionTransformer(nn.Module):
     def __init__(self, config: SiglipVisionConfig):
